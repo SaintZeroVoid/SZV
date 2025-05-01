@@ -242,7 +242,32 @@
         window.location.href = 'login.html';
         return;
       }
-      alert('Thank you for your purchase! Your order has been placed.');
+      // Send order confirmation email
+      const user = JSON.parse(localStorage.getItem('loggedInUser'));
+      const orderDetails = cart.map(item => `${item.name} - $${item.price.toFixed(2)}`).join('\n');
+      const emailData = {
+        to: user.email,
+        subject: 'Order Confirmation - The Generics Pharmacy',
+        text: `Dear ${user.username},\n\nThank you for your purchase! Your order details:\n${orderDetails}\n\nRegards,\nThe Generics Pharmacy`
+      };
+
+      fetch('http://localhost:3001/send-order-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Thank you for your purchase! A confirmation email has been sent.');
+        } else {
+          alert('Thank you for your purchase! However, we could not send a confirmation email.');
+        }
+      })
+      .catch(() => {
+        alert('Thank you for your purchase! However, we could not send a confirmation email.');
+      });
+
       cart.length = 0;
       renderCart();
     });
