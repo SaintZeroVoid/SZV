@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About - The Generics Pharmacy</title>
+  <meta name="description" content="Learn more about The Generics Pharmacy, our mission, and values." />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-red-100 via-red-50 to-red-100 min-h-screen flex flex-col">
+  <header class="bg-white shadow sticky top-0 z-50" role="banner">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-3xl font-extrabold text-red-800" aria-label="The Generics Pharmacy Home">The Generics Pharmacy</a>
+      <nav class="space-x-6 text-gray-700" role="navigation" aria-label="Primary Navigation" id="navLinks">
+        <a href="index.html" class="hover:text-red-800 transition">Home</a>
+        <a href="shop.html" class="hover:text-red-800 transition">Shop</a>
+        <a href="trading.html" class="hover:text-red-800 transition">Trading</a>
+        <a href="about.html" class="hover:text-red-800 transition font-semibold text-red-800" aria-current="page">About</a>
+        <a href="contact.html" class="hover:text-red-800 transition">Contact</a>
+        <a href="faq.html" class="hover:text-red-800 transition">FAQ</a>
+        <a href="login.html" class="hover:text-red-800 transition">Login</a>
+        <a href="register.html" class="hover:text-red-800 transition">Register</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-6 py-10 max-w-4xl">
+    <h1 class="text-4xl font-extrabold text-red-900 mb-8 text-center">About Us</h1>
+    <p class="text-red-800 text-lg leading-relaxed mb-6">
+      The Generics Pharmacy is dedicated to providing affordable and quality generic medicines and health products to our customers.
+    </p>
+    <p class="text-red-800 text-lg leading-relaxed">
+      Our mission is to improve access to essential medicines and promote health and wellness in the community.
+    </p>
+  </main>
+
+  <footer class="bg-white shadow mt-12">
+    <div class="container mx-auto px-6 py-6 text-center text-gray-600 text-sm">
+      &copy; 2024 The Generics Pharmacy. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    const navLinks = document.getElementById('navLinks');
+
+    function isLoggedIn() {
+      return localStorage.getItem('authToken') !== null;
+    }
+
+    function updateNav() {
+      if (isLoggedIn()) {
+        const username = localStorage.getItem('username') || 'User';
+        navLinks.innerHTML += `
+          <span class="text-red-800 font-semibold">Hello, ${username}</span>
+          <button id="logoutBtn" class="ml-4 text-red-600 hover:text-red-800">Logout</button>
+        `;
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+          localStorage.clear();
+          alert('You have been logged out.');
+          window.location.href = 'index.html';
+        });
+      } else {
+        navLinks.innerHTML += '<a href="login.html" class="hover:text-red-800 transition">Login</a>';
+      }
+    }
+
+    updateNav();
+  </script>
+</body>
+</html>
