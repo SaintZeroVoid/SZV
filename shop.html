@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="The Generics Pharmacy - Shop affordable and quality generic medicines and health products." />
   <title>The Generics Pharmacy - Shop</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,129 +12,44 @@
     body {
       font-family: 'Roboto', sans-serif;
     }
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-  <header class="bg-white shadow">
+  <header class="bg-white shadow sticky top-0 z-50" role="banner">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <a href="index.html" class="text-2xl font-bold text-green-700">The Generics Pharmacy</a>
-      <nav class="space-x-6 text-gray-700" id="navLinks">
+      <a href="index.html" class="text-3xl font-extrabold text-green-700" aria-label="The Generics Pharmacy Home">The Generics Pharmacy</a>
+      <nav class="space-x-6 text-gray-700" role="navigation" aria-label="Primary Navigation">
         <a href="index.html" class="hover:text-green-700 transition">Home</a>
-        <a href="shop.html" class="hover:text-green-700 transition font-semibold text-green-700">Shop</a>
+        <a href="shop.html" class="hover:text-green-700 transition font-semibold text-green-700" aria-current="page">Shop</a>
         <a href="trading.html" class="hover:text-green-700 transition">Trading</a>
         <a href="about.html" class="hover:text-green-700 transition">About</a>
         <a href="contact.html" class="hover:text-green-700 transition">Contact</a>
         <a href="faq.html" class="hover:text-green-700 transition">FAQ</a>
+        <a href="login.html" class="hover:text-green-700 transition">Login</a>
+        <a href="register.html" class="hover:text-green-700 transition">Register</a>
       </nav>
     </div>
   </header>
 
   <main class="flex-grow container mx-auto px-4 py-10">
-    <h1 class="text-3xl font-bold text-green-800 mb-8">Shop Products</h1>
-    <div class="mb-6">
-      <input type="text" id="searchInput" placeholder="Search products..." aria-label="Search products" class="w-full max-w-md px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-600" />
+    <h1 class="text-4xl font-extrabold text-green-800 mb-8 text-center">Shop Our Products</h1>
+
+    <div class="flex flex-col md:flex-row md:justify-between mb-8 gap-4">
+      <input type="text" id="searchInput" placeholder="Search products..." aria-label="Search products" class="w-full md:w-1/3 px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-600" />
+      <select id="sortSelect" aria-label="Sort products" class="w-full md:w-1/4 px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-600">
+        <option value="default">Sort by</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name-asc">Name: A to Z</option>
+        <option value="name-desc">Name: Z to A</option>
+      </select>
     </div>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6" id="productGrid">
-      <!-- Product Card -->
-      <div class="bg-white rounded-lg shadow p-4 flex flex-col" data-name="Pain Relief Tablets">
-        <img src="https://images.pexels.com/photos/433267/pexels-photo-433267.jpeg?auto=compress&cs=tinysrgb&h=150" alt="Pain Relief Tablets" class="rounded mb-4 object-cover h-40" />
-        <h3 class="font-semibold text-lg mb-2">Pain Relief Tablets</h3>
-        <p class="text-green-700 font-bold mb-2">$9.99</p>
-        <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="Pain Relief Tablets" data-price="9.99">Add to Cart</button>
-        <div class="mt-4">
-          <h4 class="font-semibold mb-2">Customer Reviews</h4>
-          <div class="reviews" id="reviews-pain-relief"></div>
-          <textarea class="w-full border border-gray-300 rounded p-2 mb-2" placeholder="Write a review..." data-product="Pain Relief Tablets"></textarea>
-          <button class="bg-green-600 text-white py-1 px-4 rounded hover:bg-green-700 transition submit-review" data-product="Pain Relief Tablets">Submit Review</button>
-        </div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4 flex flex-col" data-name="Vitamin C Supplements">
-        <img src="https://images.pexels.com/photos/40568/medicine-vitamins-health-supplements-40568.jpeg?auto=compress&cs=tinysrgb&h=150" alt="Vitamin C Supplements" class="rounded mb-4 object-cover h-40" />
-        <h3 class="font-semibold text-lg mb-2">Vitamin C Supplements</h3>
-        <p class="text-green-700 font-bold mb-2">$14.99</p>
-        <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="Vitamin C Supplements" data-price="14.99">Add to Cart</button>
-        <div class="mt-4">
-          <h4 class="font-semibold mb-2">Customer Reviews</h4>
-          <div class="reviews" id="reviews-vitamin-c"></div>
-          <textarea class="w-full border border-gray-300 rounded p-2 mb-2" placeholder="Write a review..." data-product="Vitamin C Supplements"></textarea>
-          <button class="bg-green-600 text-white py-1 px-4 rounded hover:bg-green-700 transition submit-review" data-product="Vitamin C Supplements">Submit Review</button>
-        </div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4 flex flex-col" data-name="Cough Syrup">
-        <img src="https://images.pexels.com/photos/40568/cough-syrup-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" alt="Cough Syrup" class="rounded mb-4 object-cover h-40" />
-        <h3 class="font-semibold text-lg mb-2">Cough Syrup</h3>
-        <p class="text-green-700 font-bold mb-2">$7.99</p>
-        <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="Cough Syrup" data-price="7.99">Add to Cart</button>
-        <div class="mt-4">
-          <h4 class="font-semibold mb-2">Customer Reviews</h4>
-          <div class="reviews" id="reviews-cough-syrup"></div>
-          <textarea class="w-full border border-gray-300 rounded p-2 mb-2" placeholder="Write a review..." data-product="Cough Syrup"></textarea>
-          <button class="bg-green-600 text-white py-1 px-4 rounded hover:bg-green-700 transition submit-review" data-product="Cough Syrup">Submit Review</button>
-        </div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4 flex flex-col" data-name="Allergy Relief">
-        <img src="https://images.pexels.com/photos/40568/allergy-relief-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" alt="Allergy Relief" class="rounded mb-4 object-cover h-40" />
-        <h3 class="font-semibold text-lg mb-2">Allergy Relief</h3>
-        <p class="text-green-700 font-bold mb-2">$12.99</p>
-        <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="Allergy Relief" data-price="12.99">Add to Cart</button>
-        <div class="mt-4">
-          <h4 class="font-semibold mb-2">Customer Reviews</h4>
-          <div class="reviews" id="reviews-allergy-relief"></div>
-          <textarea class="w-full border border-gray-300 rounded p-2 mb-2" placeholder="Write a review..." data-product="Allergy Relief"></textarea>
-          <button class="bg-green-600 text-white py-1 px-4 rounded hover:bg-green-700 transition submit-review" data-product="Allergy Relief">Submit Review</button>
-        </div>
-      </div>
-+      <div class="bg-white rounded-lg shadow p-4 flex flex-col" data-name="Antibiotic Capsules">
-+        <img src="https://images.pexels.com/photos/40568/antibiotic-capsules-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" alt="Antibiotic Capsules" class="rounded mb-4 object-cover h-40" />
-+        <h3 class="font-semibold text-lg mb-2">Antibiotic Capsules</h3>
-+        <p class="text-green-700 font-bold mb-2">$19.99</p>
-+        <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="Antibiotic Capsules" data-price="19.99">Add to Cart</button>
-+        <div class="mt-4">
-+          <h4 class="font-semibold mb-2">Customer Reviews</h4>
-+          <div class="reviews" id="reviews-antibiotic-capsules"></div>
-+          <textarea class="w-full border border-gray-300 rounded p-2 mb-2" placeholder="Write a review..." data-product="Antibiotic Capsules"></textarea>
-+          <button class="bg-green-600 text-white py-1 px-4 rounded hover:bg-green-700 transition submit-review" data-product="Antibiotic Capsules">Submit Review</button>
-+        </div>
-+      </div>
-+      <div class="bg-white rounded-lg shadow p-4 flex flex-col" data-name="Antacid Tablets">
-+        <img src="https://images.pexels.com/photos/40568/antacid-tablets-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" alt="Antacid Tablets" class="rounded mb-4 object-cover h-40" />
-+        <h3 class="font-semibold text-lg mb-2">Antacid Tablets</h3>
-+        <p class="text-green-700 font-bold mb-2">$11.99</p>
-+        <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="Antacid Tablets" data-price="11.99">Add to Cart</button>
-+        <div class="mt-4">
-+          <h4 class="font-semibold mb-2">Customer Reviews</h4>
-+          <div class="reviews" id="reviews-antacid-tablets"></div>
-+          <textarea class="w-full border border-gray-300 rounded p-2 mb-2" placeholder="Write a review..." data-product="Antacid Tablets"></textarea>
-+          <button class="bg-green-600 text-white py-1 px-4 rounded hover:bg-green-700 transition submit-review" data-product="Antacid Tablets">Submit Review</button>
-+        </div>
-+      </div>
-+      <div class="bg-white rounded-lg shadow p-4 flex flex-col" data-name="Eye Drops">
-+        <img src="https://images.pexels.com/photos/40568/eye-drops-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" alt="Eye Drops" class="rounded mb-4 object-cover h-40" />
-+        <h3 class="font-semibold text-lg mb-2">Eye Drops</h3>
-+        <p class="text-green-700 font-bold mb-2">$8.99</p>
-+        <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="Eye Drops" data-price="8.99">Add to Cart</button>
-+        <div class="mt-4">
-+          <h4 class="font-semibold mb-2">Customer Reviews</h4>
-+          <div class="reviews" id="reviews-eye-drops"></div>
-+          <textarea class="w-full border border-gray-300 rounded p-2 mb-2" placeholder="Write a review..." data-product="Eye Drops"></textarea>
-+          <button class="bg-green-600 text-white py-1 px-4 rounded hover:bg-green-700 transition submit-review" data-product="Eye Drops">Submit Review</button>
-+        </div>
-+      </div>
-+      <div class="bg-white rounded-lg shadow p-4 flex flex-col" data-name="Nasal Spray">
-+        <img src="https://images.pexels.com/photos/40568/nasal-spray-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" alt="Nasal Spray" class="rounded mb-4 object-cover h-40" />
-+        <h3 class="font-semibold text-lg mb-2">Nasal Spray</h3>
-+        <p class="text-green-700 font-bold mb-2">$10.99</p>
-+        <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="Nasal Spray" data-price="10.99">Add to Cart</button>
-+        <div class="mt-4">
-+          <h4 class="font-semibold mb-2">Customer Reviews</h4>
-+          <div class="reviews" id="reviews-nasal-spray"></div>
-+          <textarea class="w-full border border-gray-300 rounded p-2 mb-2" placeholder="Write a review..." data-product="Nasal Spray"></textarea>
-+          <button class="bg-green-600 text-white py-1 px-4 rounded hover:bg-green-700 transition submit-review" data-product="Nasal Spray">Submit Review</button>
-+        </div>
-+      </div>
-     </div>
- 
-     <section class="mt-12">
+      <!-- Product cards will be dynamically inserted here -->
     </div>
 
     <section class="mt-12">
@@ -152,52 +68,48 @@
   </footer>
 
   <script>
+    const products = [
+      { name: "Pain Relief Tablets", price: 9.99, image: "https://images.pexels.com/photos/433267/pexels-photo-433267.jpeg?auto=compress&cs=tinysrgb&h=150" },
+      { name: "Vitamin C Supplements", price: 14.99, image: "https://images.pexels.com/photos/40568/medicine-vitamins-health-supplements-40568.jpeg?auto=compress&cs=tinysrgb&h=150" },
+      { name: "Cough Syrup", price: 7.99, image: "https://images.pexels.com/photos/40568/cough-syrup-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" },
+      { name: "Allergy Relief", price: 12.99, image: "https://images.pexels.com/photos/40568/allergy-relief-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" },
+      { name: "Antibiotic Capsules", price: 19.99, image: "https://images.pexels.com/photos/40568/antibiotic-capsules-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" },
+      { name: "Antacid Tablets", price: 11.99, image: "https://images.pexels.com/photos/40568/antacid-tablets-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" },
+      { name: "Eye Drops", price: 8.99, image: "https://images.pexels.com/photos/40568/eye-drops-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" },
+      { name: "Nasal Spray", price: 10.99, image: "https://images.pexels.com/photos/40568/nasal-spray-medicine-health-40568.jpeg?auto=compress&cs=tinysrgb&h=150" }
+    ];
+
     const cart = [];
+    const productGrid = document.getElementById('productGrid');
     const cartContainer = document.getElementById('cart');
     const buyNowBtn = document.getElementById('buyNowBtn');
     const navLinks = document.getElementById('navLinks');
 
-    // Reviews data stored in localStorage
-    function getReviews(product) {
-      return JSON.parse(localStorage.getItem('reviews-' + product) || '[]');
-    }
-
-    function saveReviews(product, reviews) {
-      localStorage.setItem('reviews-' + product, JSON.stringify(reviews));
-    }
-
-    function renderReviews(product) {
-      const reviewsDiv = document.getElementById('reviews-' + product.toLowerCase().replace(/\s+/g, '-'));
-      if (!reviewsDiv) return;
-      const reviews = getReviews(product);
-      if (reviews.length === 0) {
-        reviewsDiv.innerHTML = '<p class="text-gray-600">No reviews yet.</p>';
-        return;
-      }
-      let html = '<ul class="space-y-2">';
-      reviews.forEach(r => {
-        html += `<li class="border border-gray-300 rounded p-2 bg-gray-50">${r}</li>`;
+    function renderProducts(productsToRender) {
+      productGrid.innerHTML = '';
+      productsToRender.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'bg-white rounded-lg shadow p-4 flex flex-col';
+        productCard.innerHTML = `
+          <img src="${product.image}" alt="${product.name}" class="rounded mb-4 object-cover h-40" loading="lazy" />
+          <h3 class="font-semibold text-lg mb-2">${product.name}</h3>
+          <p class="text-green-700 font-bold mb-2">$${product.price.toFixed(2)}</p>
+          <button class="mt-auto bg-green-600 text-white py-2 rounded hover:bg-green-700 transition add-to-cart" data-product="${product.name}" data-price="${product.price}">Add to Cart</button>
+        `;
+        productGrid.appendChild(productCard);
       });
-      html += '</ul>';
-      reviewsDiv.innerHTML = html;
+      attachAddToCartListeners();
     }
 
-    document.querySelectorAll('.submit-review').forEach(button => {
-      button.addEventListener('click', () => {
-        const product = button.getAttribute('data-product');
-        const textarea = button.previousElementSibling;
-        const reviewText = textarea.value.trim();
-        if (!reviewText) {
-          alert('Please write a review before submitting.');
-          return;
-        }
-        const reviews = getReviews(product);
-        reviews.push(reviewText);
-        saveReviews(product, reviews);
-        renderReviews(product);
-        textarea.value = '';
+    function attachAddToCartListeners() {
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', () => {
+          const name = button.getAttribute('data-product');
+          const price = parseFloat(button.getAttribute('data-price'));
+          addToCart(name, price);
+        });
       });
-    });
+    }
 
     function renderCart() {
       if (cart.length === 0) {
@@ -211,7 +123,7 @@
         total += item.price;
         html += `<li class="py-2 flex justify-between items-center">
           <span>${item.name}</span>
-          <span>$ ${item.price.toFixed(2)}</span>
+          <span>$${item.price.toFixed(2)}</span>
           <button class="text-red-500 hover:text-red-700 ml-4" onclick="removeFromCart(${index})" aria-label="Remove item"><i class="fas fa-trash"></i></button>
         </li>`;
       });
@@ -293,15 +205,33 @@
       }
     }
 
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-      button.addEventListener('click', () => {
-        const name = button.getAttribute('data-product');
-        const price = parseFloat(button.getAttribute('data-price'));
-        addToCart(name, price);
-      });
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+      renderProducts(filtered);
+    });
+
+    document.getElementById('sortSelect').addEventListener('change', function() {
+      let sorted = [...products];
+      switch (this.value) {
+        case 'price-asc':
+          sorted.sort((a, b) => a.price - b.price);
+          break;
+        case 'price-desc':
+          sorted.sort((a, b) => b.price - a.price);
+          break;
+        case 'name-asc':
+          sorted.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'name-desc':
+          sorted.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+      }
+      renderProducts(sorted);
     });
 
     updateNav();
+    renderProducts(products);
     renderCart();
   </script>
 </body>
