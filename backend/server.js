@@ -49,6 +49,88 @@ const User = mongoose.model('User', userSchema);
 const Product = mongoose.model('Product', productSchema);
 const Order = mongoose.model('Order', orderSchema);
 
+// Middleware to authenticate JWT token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Forbidden' });
+    req.user = user;
+    next();
+  });
+}
+
+// Routes
+
+// Admin login
+app.post('/login', async (req, res) => {
+  const { username, password, role } = req.body;
+  if (!username || !password || !role) {
+    return res.status(400).json({ error: 'Missing credentials' });
+  }
+  try {
+    const user = await User.findOne({ username, role });
+    if (!user) return res.status(401).json({ error: 'Invalid username or password' });
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) return res.status(401).json({ error: 'Invalid username or password' });
+
+    const token = jwt.sign({ id: user._id, role: user.role }, jwtSecret, { expiresIn: '1h' });
+    res.json({ token, role: user.role });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Customer registration
+app.post('/customer/register', async (req, res) => {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Username or email already exists' });
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+    const newUser = new User({ username, email, passwordHash, role: 'customer' });
+    await newUser.save();
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Get products
+app.get('/products', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load products' });
+  }
+});
+
+// Purchase product
+app.post('/purchase', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { productId } = req.body;
+  if (!productId) return res.status(400).json({ error: 'Product ID required' });
+
+  try {
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    const order = new Order({ productId, userId, status: 'Pending' });
+    await order.save();
+    res.status(201).json({ message: 'Purchase successful' });
+  } catch (err) {
+    res.status(500).json({ error: 'Purchase failed' });
+  }
+});
+
 // Serve frontend static files
 const path = require('path');
 app.use(express.static(path.join(__dirname, '../TGP-website')));
