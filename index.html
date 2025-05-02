@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>The Generics Pharmacy - Home</title>
-  <meta name="description" content="The Generics Pharmacy - Affordable generic medicines and health products online." />
+  <meta name="description" content="Welcome to The Generics Pharmacy, your trusted source for affordable generic medicines and health products." />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
@@ -25,16 +25,35 @@
         <a href="about.html" class="hover:text-red-800 transition">About</a>
         <a href="contact.html" class="hover:text-red-800 transition">Contact</a>
         <a href="faq.html" class="hover:text-red-800 transition">FAQ</a>
-        <a href="login.html" class="hover:text-red-800 transition">Login</a>
-        <a href="register.html" class="hover:text-red-800 transition">Register</a>
+      </nav>
+      <nav class="space-x-6 text-gray-700" role="navigation" aria-label="User Navigation" id="userNav">
+        <!-- User login/logout links will be dynamically inserted here -->
       </nav>
     </div>
   </header>
 
-  <main class="flex-grow container mx-auto px-6 py-10 max-w-4xl text-center">
-    <h1 class="text-5xl font-extrabold text-red-900 mb-6">Welcome to The Generics Pharmacy</h1>
-    <p class="text-red-800 text-lg mb-8">Your trusted online source for affordable generic medicines and health products.</p>
-    <a href="shop.html" class="inline-block bg-red-600 text-white py-3 px-8 rounded hover:bg-red-700 transition text-lg font-semibold">Shop Now</a>
+  <main class="flex-grow container mx-auto px-6 py-10">
+    <h1 class="text-4xl font-extrabold text-red-900 mb-8 text-center">Welcome to The Generics Pharmacy</h1>
+    <p class="text-center text-gray-700 max-w-3xl mx-auto mb-12">
+      Your trusted source for affordable generic medicines and health products. Shop with confidence and take control of your health today.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <i class="fas fa-pills text-red-600 text-4xl mb-4"></i>
+        <h2 class="text-xl font-semibold mb-2">Wide Product Range</h2>
+        <p>Explore a variety of generic medicines and health products at competitive prices.</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <i class="fas fa-shield-alt text-red-600 text-4xl mb-4"></i>
+        <h2 class="text-xl font-semibold mb-2">Trusted Quality</h2>
+        <p>All products meet strict quality standards to ensure your safety and satisfaction.</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <i class="fas fa-truck text-red-600 text-4xl mb-4"></i>
+        <h2 class="text-xl font-semibold mb-2">Fast Delivery</h2>
+        <p>Reliable and quick shipping to your doorstep, so you never run out of essential medicines.</p>
+      </div>
+    </div>
   </main>
 
   <footer class="bg-white shadow mt-12">
@@ -44,30 +63,30 @@
   </footer>
 
   <script>
-    const navLinks = document.getElementById('navLinks');
+    const userNav = document.getElementById('userNav');
 
     function isLoggedIn() {
       return localStorage.getItem('authToken') !== null;
     }
 
-    function updateNav() {
+    function updateUserNav() {
       if (isLoggedIn()) {
         const username = localStorage.getItem('username') || 'User';
-        navLinks.innerHTML += `
-          <span class="text-red-800 font-semibold">Hello, ${username}</span>
+        userNav.innerHTML = `
+          <span class="text-red-700 font-semibold">Hello, ${username}</span>
           <button id="logoutBtn" class="ml-4 text-red-600 hover:text-red-800">Logout</button>
         `;
         document.getElementById('logoutBtn').addEventListener('click', () => {
           localStorage.clear();
           alert('You have been logged out.');
-          window.location.href = 'index.html';
+          window.location.reload();
         });
       } else {
-        navLinks.innerHTML += '<a href="login.html" class="hover:text-red-800 transition">Login</a>';
+        userNav.innerHTML = '<a href="login.html" class="hover:text-red-700 transition">Login</a> <a href="register.html" class="hover:text-red-700 transition ml-4">Register</a>';
       }
     }
 
-    updateNav();
+    updateUserNav();
   </script>
 </body>
 </html>

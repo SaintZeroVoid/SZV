@@ -1,27 +1,16 @@
-const express = require('express');
-<<<<<<< HEAD
-// Removed database and related code for simplified backend
-
-const cors = require('cors');
-const express = require('express');
-const path = require('path');
-=======
 const cors = require('cors');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
->>>>>>> e88e0ef (Initial commit of The Generics Pharmacy website and backend)
+const express = require('express');
 
 const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-<<<<<<< HEAD
-=======
 app.use(bodyParser.json());
->>>>>>> e88e0ef (Initial commit of The Generics Pharmacy website and backend)
 
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../TGP-website')));
@@ -31,8 +20,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../TGP-website/index.html'));
 });
 
-<<<<<<< HEAD
-=======
 // In-memory data stores (replace with DB in production)
 const products = [
   { _id: '1', name: 'Generic Medicine A', price: 10.99, description: 'Affordable generic medicine A', image: 'https://via.placeholder.com/150' },
@@ -66,15 +53,15 @@ app.get('/products', (req, res) => {
 
 // API to register new user
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, role } = req.body;
   if (users.find(u => u.username === username)) {
     return res.status(409).json({ message: 'Username already exists' });
   }
   const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = { id: users.length + 1, username, password: hashedPassword };
+  const newUser = { id: users.length + 1, username, password: hashedPassword, role: role || 'user' };
   users.push(newUser);
-  const token = jwt.sign({ username: newUser.username, id: newUser.id }, JWT_SECRET, { expiresIn: '1h' });
-  res.json({ token, username: newUser.username });
+  const token = jwt.sign({ username: newUser.username, id: newUser.id, role: newUser.role }, JWT_SECRET, { expiresIn: '1h' });
+  res.json({ token, username: newUser.username, role: newUser.role });
 });
 
 // API to login
@@ -88,8 +75,21 @@ app.post('/login', async (req, res) => {
   if (!match) {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
-  const token = jwt.sign({ username: user.username, id: user.id }, JWT_SECRET, { expiresIn: '1h' });
-  res.json({ token, username: user.username });
+  const token = jwt.sign({ username: user.username, id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+  res.json({ token, username: user.username, role: user.role });
+});
+
+// Middleware to check admin role
+function authorizeAdmin(req, res, next) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Access denied: Admins only' });
+  }
+  next();
+}
+
+// Admin-only route example
+app.get('/admin', authenticateToken, authorizeAdmin, (req, res) => {
+  res.json({ message: 'Welcome to the admin panel' });
 });
 
 // API to purchase a product (requires auth)
@@ -104,7 +104,6 @@ app.post('/purchase', authenticateToken, (req, res) => {
   res.json({ message: 'Purchase successful' });
 });
 
->>>>>>> e88e0ef (Initial commit of The Generics Pharmacy website and backend)
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });
