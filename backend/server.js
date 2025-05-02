@@ -25,13 +25,34 @@ let reviews = [
   { id: 2, user: 'Jane Smith', comment: 'Good value for money.', rating: 4 },
 ];
 let accounts = [
-  { id: 1, username: 'user1', email: 'user1@example.com', password: 'password1' },
-  { id: 2, username: 'user2', email: 'user2@example.com', password: 'password2' },
-  { id: 3, username: 'ZeroVoid', email: 'admin@example.com', password: '1234567890' },
+  { id: 1, username: 'user1', email: 'user1@example.com', password: 'password1', role: 'admin' },
+  { id: 2, username: 'user2', email: 'user2@example.com', password: 'password2', role: 'admin' },
+  { id: 3, username: 'ZeroVoid', email: 'admin@example.com', password: '1234567890', role: 'admin' },
 ];
+let customers = [];
 
-// Simple token store for demonstration
 let tokens = {};
+
+// Helper function to generate tokens
+function generateToken() {
+  return crypto.randomBytes(16).toString('hex');
+}
+
+// Middleware to check auth token and role
+function authenticate(role) {
+  return (req, res, next) => {
+    const token = req.headers['authorization'];
+    if (!token || !tokens[token]) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const user = tokens[token];
+    if (role && user.role !== role) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    req.user = user;
+    next();
+  };
+}
 
 app.post('/send-order-confirmation', (req, res) => {
   const { to, subject, text } = req.body;
@@ -52,35 +73,50 @@ app.post('/send-order-confirmation', (req, res) => {
   });
 });
 
-// Login API
-app.post('/login', (req, res) => {
+// Admin login API
+app.post('/admin/login', (req, res) => {
   const { username, password } = req.body;
   const user = accounts.find(acc => acc.username === username && acc.password === password);
   if (!user) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  // Generate a simple token
-  const token = crypto.randomBytes(16).toString('hex');
-  tokens[token] = user.username;
+  const token = generateToken();
+  tokens[token] = { username: user.username, role: 'admin' };
   res.json({ token });
 });
 
-// Middleware to check auth token
-function authenticate(req, res, next) {
-  const token = req.headers['authorization'];
-  if (!token || !tokens[token]) {
-    return res.status(401).json({ error: 'Unauthorized' });
+// Customer registration API
+app.post('/customer/register', (req, res) => {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Missing fields' });
   }
-  req.user = tokens[token];
-  next();
-}
+  if (customers.find(c => c.username === username || c.email === email)) {
+    return res.status(400).json({ error: 'User already exists' });
+  }
+  const newCustomer = { id: customers.length + 1, username, email, password, role: 'customer' };
+  customers.push(newCustomer);
+  res.status(201).json({ message: 'Customer registered successfully' });
+});
 
-// Product APIs
-app.get('/products', authenticate, (req, res) => {
+// Customer login API
+app.post('/customer/login', (req, res) => {
+  const { username, password } = req.body;
+  const user = customers.find(c => c.username === username && c.password === password);
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  const token = generateToken();
+  tokens[token] = { username: user.username, role: 'customer' };
+  res.json({ token });
+});
+
+// Product APIs (admin only)
+app.get('/products', authenticate('admin'), (req, res) => {
   res.json(products);
 });
 
-app.post('/products', authenticate, (req, res) => {
+app.post('/products', authenticate('admin'), (req, res) => {
   const { name, price } = req.body;
   if (!name || typeof price !== 'number') {
     return res.status(400).json({ error: 'Invalid product data' });
@@ -90,22 +126,38 @@ app.post('/products', authenticate, (req, res) => {
   res.status(201).json(newProduct);
 });
 
-app.delete('/products/:id', authenticate, (req, res) => {
+app.delete('/products/:id', authenticate('admin'), (req, res) => {
   const id = parseInt(req.params.id);
   products = products.filter(p => p.id !== id);
   res.status(204).send();
 });
 
-// Reviews API
-app.get('/reviews', authenticate, (req, res) => {
+// Reviews API (admin only)
+app.get('/reviews', authenticate('admin'), (req, res) => {
   res.json(reviews);
 });
 
-// Accounts API
-app.get('/accounts', authenticate, (req, res) => {
-  res.json(accounts.map(({ password, ...rest }) => rest)); // Do not send passwords
+// Accounts API (admin only)
+app.get('/accounts', authenticate('admin'), (req, res) => {
+  res.json(accounts.map(({ password, ...rest }) => rest));
+});
+
+// Customer products API (public)
+app.get('/shop/products', (req, res) => {
+  res.json(products);
+});
+
+// Purchase API (customer only)
+app.post('/purchase', authenticate('customer'), (req, res) => {
+  const { productId } = req.body;
+  const product = products.find(p => p.id === productId);
+  if (!product) {
+    return res.status(400).json({ error: 'Product not found' });
+  }
+  // For demo, just respond success
+  res.json({ message: `Purchase successful for product ${product.name}` });
 });
 
 app.listen(port, () => {
-  console.log(`Email backend server running on port ${port}`);
+  console.log(`Backend server running on port ${port}`);
 });
