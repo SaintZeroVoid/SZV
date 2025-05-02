@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Generics Pharmacy - Login</title>
+  <title>Login - The Generics Pharmacy</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
@@ -13,45 +13,54 @@
     }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col justify-center items-center">
-  <div class="bg-white rounded-lg shadow p-8 max-w-md w-full">
-    <h1 class="text-3xl font-bold text-green-800 mb-6 text-center">Login</h1>
-    <form id="loginForm" novalidate>
-      <div class="mb-4">
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-6 text-center text-green-700">Admin Login</h1>
+    <form id="loginForm" class="space-y-4">
+      <div>
         <label for="username" class="block font-semibold mb-1">Username</label>
         <input type="text" id="username" name="username" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600" />
       </div>
-      <div class="mb-4">
+      <div>
         <label for="password" class="block font-semibold mb-1">Password</label>
         <input type="password" id="password" name="password" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600" />
       </div>
-      <button type="submit" class="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700 transition w-full">Login</button>
+      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Login</button>
+      <p id="errorMsg" class="text-red-600 mt-2 hidden"></p>
     </form>
-    <p class="mt-4 text-center text-gray-700">Don't have an account? <a href="register.html" class="text-green-700 hover:underline">Register here</a>.</p>
   </div>
 
   <script>
     const loginForm = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
+    const apiBase = 'http://localhost:3001';
 
-    loginForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      if (!loginForm.checkValidity()) {
-        loginForm.reportValidity();
-        return;
-      }
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      errorMsg.classList.add('hidden');
       const username = loginForm.username.value.trim();
       const password = loginForm.password.value;
+      if (!username || !password) return;
 
-      let users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find(u => u.username === username && u.password === password);
-      if (!user) {
-        alert('Invalid username or password.');
-        return;
-      }
-
-      localStorage.setItem('loggedInUser', JSON.stringify(user));
-      alert('Login successful!');
-      window.location.href = 'shop.html';
+      fetch(apiBase + '/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password }),
+      })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Invalid username or password');
+        }
+        return res.json();
+      })
+      .then(data => {
+        localStorage.setItem('authToken', data.token);
+        window.location.href = 'admin.html';
+      })
+      .catch(err => {
+        errorMsg.textContent = err.message;
+        errorMsg.classList.remove('hidden');
+      });
     });
   </script>
 </body>
