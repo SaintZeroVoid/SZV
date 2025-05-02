@@ -1,9 +1,9 @@
 nohup: ignoring input
-(node:17477) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(node:641) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:17477) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(node:641) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
 Server running on port 3001
-MongoDB connection error: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+MongoDB connection error: MongooseServerSelectionError: Server at localhost:27017 reports maximum wire version 6, but this version of the Node.js Driver requires at least 7 (MongoDB 4.0)
     at _handleConnectionErrors (/project/sandbox/user-workspace/backend/node_modules/mongoose/lib/connection.js:1165:11)
     at NativeConnection.openUri (/project/sandbox/user-workspace/backend/node_modules/mongoose/lib/connection.js:1096:11) {
   errorLabelSet: Set(0) {},

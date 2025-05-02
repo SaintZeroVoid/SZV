@@ -15,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
+// Update MongoDB connection string to fallback to localhost if env var not set
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/genericspharmacy', {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -44,6 +45,13 @@ const orderSchema = new mongoose.Schema({
   status: { type: String, default: 'Pending' }
 });
 
+const categorySchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  description: { type: String }
+});
+
+const Category = mongoose.model('Category', categorySchema);
+
 // Models
 const User = mongoose.model('User', userSchema);
 const Product = mongoose.model('Product', productSchema);
@@ -62,6 +70,7 @@ function authenticateToken(req, res, next) {
   });
 }
 
+  
 // Routes
 
 // Admin login
@@ -128,6 +137,74 @@ app.post('/purchase', authenticateToken, async (req, res) => {
     res.status(201).json({ message: 'Purchase successful' });
   } catch (err) {
     res.status(500).json({ error: 'Purchase failed' });
+  }
+});
+
+// New routes for Category CRUD operations
+
+// Create category
+app.post('/categories', authenticateToken, async (req, res) => {
+  const { name, description } = req.body;
+  if (!name) return res.status(400).json({ error: 'Category name is required' });
+
+  try {
+    const existingCategory = await Category.findOne({ name });
+    if (existingCategory) return res.status(409).json({ error: 'Category already exists' });
+
+    const category = new Category({ name, description });
+    await category.save();
+    res.status(201).json({ message: 'Category created successfully', category });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create category' });
+  }
+});
+
+// Get all categories
+app.get('/categories', async (req, res) => {
+  try {
+    const categories = await Category.find({});
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load categories' });
+  }
+});
+
+// Get category by id
+app.get('/categories/:id', async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) return res.status(404).json({ error: 'Category not found' });
+    res.json(category);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load category' });
+  }
+});
+
+// Update category
+app.put('/categories/:id', authenticateToken, async (req, res) => {
+  const { name, description } = req.body;
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) return res.status(404).json({ error: 'Category not found' });
+
+    if (name) category.name = name;
+    if (description) category.description = description;
+
+    await category.save();
+    res.json({ message: 'Category updated successfully', category });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
+// Delete category
+app.delete('/categories/:id', authenticateToken, async (req, res) => {
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id);
+    if (!category) return res.status(404).json({ error: 'Category not found' });
+    res.json({ message: 'Category deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete category' });
   }
 });
 
