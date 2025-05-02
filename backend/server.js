@@ -16,14 +16,13 @@ app.use(express.json());
 
 // MongoDB connection
 // Update MongoDB connection string to fallback to localhost if env var not set
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/genericspharmacy', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('MongoDB connection error:', err);
-});
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/genericspharmacy')
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+  });
 
 // Schemas and Models
 const userSchema = new mongoose.Schema({
@@ -217,6 +216,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../TGP-website/index.html'));
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });
