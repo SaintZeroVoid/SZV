@@ -25,11 +25,13 @@ let reviews = [
   { id: 2, user: 'Jane Smith', comment: 'Good value for money.', rating: 4 },
 ];
 let accounts = [
-  { id: 1, username: 'user1', email: 'user1@example.com', password: 'password1', role: 'admin' },
-  { id: 2, username: 'user2', email: 'user2@example.com', password: 'password2', role: 'admin' },
-  { id: 3, username: 'ZeroVoid', email: 'admin@example.com', password: '1234567890', role: 'admin' },
+  { id: 1, username: 'user1', email: 'user1@example.com', password: 'password1', role: 'programmer' },
+  { id: 2, username: 'user2', email: 'user2@example.com', password: 'password2', role: 'employee' },
+  { id: 3, username: 'ZeroVoid', email: 'admin@example.com', password: '1234567890', role: 'programmer' },
 ];
 let customers = [];
+
+let orders = [];
 
 let tokens = {};
 
@@ -46,8 +48,14 @@ function authenticate(role) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const user = tokens[token];
-    if (role && user.role !== role) {
-      return res.status(403).json({ error: 'Forbidden' });
+    if (role) {
+      if (Array.isArray(role)) {
+        if (!role.includes(user.role)) {
+          return res.status(403).json({ error: 'Forbidden' });
+        }
+      } else if (user.role !== role) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
     }
     req.user = user;
     next();
@@ -81,8 +89,8 @@ app.post('/admin/login', (req, res) => {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   const token = generateToken();
-  tokens[token] = { username: user.username, role: 'admin' };
-  res.json({ token });
+  tokens[token] = { username: user.username, role: user.role };
+  res.json({ token, role: user.role });
 });
 
 // Customer registration API
@@ -108,15 +116,15 @@ app.post('/customer/login', (req, res) => {
   }
   const token = generateToken();
   tokens[token] = { username: user.username, role: 'customer' };
-  res.json({ token });
+  res.json({ token, role: 'customer' });
 });
 
-// Product APIs (admin only)
-app.get('/products', authenticate('admin'), (req, res) => {
+// Product APIs (programmer and employee only)
+app.get('/products', authenticate(['programmer', 'employee']), (req, res) => {
   res.json(products);
 });
 
-app.post('/products', authenticate('admin'), (req, res) => {
+app.post('/products', authenticate(['programmer', 'employee']), (req, res) => {
   const { name, price } = req.body;
   if (!name || typeof price !== 'number') {
     return res.status(400).json({ error: 'Invalid product data' });
@@ -126,19 +134,19 @@ app.post('/products', authenticate('admin'), (req, res) => {
   res.status(201).json(newProduct);
 });
 
-app.delete('/products/:id', authenticate('admin'), (req, res) => {
+app.delete('/products/:id', authenticate(['programmer', 'employee']), (req, res) => {
   const id = parseInt(req.params.id);
   products = products.filter(p => p.id !== id);
   res.status(204).send();
 });
 
-// Reviews API (admin only)
-app.get('/reviews', authenticate('admin'), (req, res) => {
+// Reviews API (programmer and employee only)
+app.get('/reviews', authenticate(['programmer', 'employee']), (req, res) => {
   res.json(reviews);
 });
 
-// Accounts API (admin only)
-app.get('/accounts', authenticate('admin'), (req, res) => {
+// Accounts API (programmer and employee only)
+app.get('/accounts', authenticate(['programmer', 'employee']), (req, res) => {
   res.json(accounts.map(({ password, ...rest }) => rest));
 });
 
@@ -154,8 +162,33 @@ app.post('/purchase', authenticate('customer'), (req, res) => {
   if (!product) {
     return res.status(400).json({ error: 'Product not found' });
   }
-  // For demo, just respond success
-  res.json({ message: `Purchase successful for product ${product.name}` });
+  // Save order
+  const order = {
+    id: orders.length + 1,
+    productId,
+    productName: product.name,
+    username: req.user.username,
+    status: 'Processing',
+    orderDate: new Date().toISOString(),
+  };
+  orders.push(order);
+  res.json({ message: `Purchase successful for product ${product.name}`, orderId: order.id });
+});
+
+// Customer order history API
+app.get('/orders', authenticate('customer'), (req, res) => {
+  const userOrders = orders.filter(o => o.username === req.user.username);
+  res.json(userOrders);
+});
+
+// Customer order tracking API
+app.get('/orders/:id', authenticate('customer'), (req, res) => {
+  const orderId = parseInt(req.params.id);
+  const order = orders.find(o => o.id === orderId && o.username === req.user.username);
+  if (!order) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
+  res.json(order);
 });
 
 app.listen(port, () => {
